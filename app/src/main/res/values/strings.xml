@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">ckl8-250-FinalProject</string>
+    <string name="animation_duration">Duration: %1$d ms</string>
+    <string name="add_task_title"> Please Add A New Pose </string>
+    <string name="task_list_title"> Task Pose </string>
+    <string name="action_settings">Settings</string>
+    <string name="action_add">Add</string>
+    <string name="action_delete">Delete</string>
+    <string name="title_activity_detail">TaskDetailActivity</string>
+    <string name="title_activity_add_task">AddTaskActivity</string>
+    <string name="take_photo"> Take Photo</string>
+    <string name="photo_done">Photo Done</string>
+    <string name="taichi">Taichi</string>
+</resources>

@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">ckl8-250-Homework2</string>
+    <string name="task_list_title"> Task List </string>
+    <string name="action_settings">Settings</string>
+    <string name="action_add">Add</string>
+    <string name="action_delete">Delete</string>
+    <string name="title_activity_detail">DetailActivity</string>
+</resources>
