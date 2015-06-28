@@ -1,14 +1,24 @@
 package com.example.rlam.ckl8_250_finalproject;
 
 import android.content.Intent;
+import android.hardware.Camera;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.speech.*;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -27,6 +37,8 @@ import java.util.ArrayList;
  */
 public class MainActivity extends FragmentActivity {
 
+    private Handler mHandler = new android.os.Handler();
+    private CameraPreview mCameraPreview;
     private boolean mMyTaichiShown;
     private static final String TAG = "MyTaichiListner";
     private SpeechRecognizer mSpeechCommand;
@@ -34,7 +46,17 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mCameraPreview = new CameraPreview(this);
+        FrameLayout fl = (FrameLayout) findViewById(R.id.my_taichi_content_fragment);
+        fl.addView(mCameraPreview);
+        fl.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mCameraPreview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+            }
+        });
 
+        // We are just getting a single default camera
+        mCameraPreview.camera = Camera.open();
         mSpeechCommand = SpeechRecognizer.createSpeechRecognizer(this);
         mSpeechCommand.setRecognitionListener(new listener());
         if (savedInstanceState == null) {
@@ -44,7 +66,7 @@ public class MainActivity extends FragmentActivity {
             mSpeechCommand.startListening(intent);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             InterpolatorFragment fragment = new InterpolatorFragment();
-            transaction.replace(R.id.sample_content_fragment, fragment);
+            transaction.replace(R.id.my_taichi_content_fragment, fragment);
             transaction.commit();
 
 //            getSupportFragmentManager().beginTransaction()
@@ -135,4 +157,64 @@ public class MainActivity extends FragmentActivity {
             Log.d(TAG, "onEvent " + eventType);
         }
     }
+    /**
+     * Release the resources when paused.
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mCameraPreview.camera != null) {
+            mCameraPreview.camera.release();
+            mCameraPreview.camera = null;
+        }
+    }
+
+    Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+
+        public void onShutter() {
+            Log.d(TAG, "shutterCallback:onShutter()");
+
+            // Play a sound
+            Runnable r = new Runnable() {
+
+                @Override
+                public void run() {
+                    MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.shutter);
+                    mp.start();
+                }
+            };
+
+            mHandler.postDelayed(r, 1000);
+        }
+    };
+
+    Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Log.d(TAG, "rawCallback:onPictureTaken()");
+        }
+    };
+
+    // PictureCallback to handle saving the picture to storage
+    Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
+
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Log.d(TAG, "jpegCallback:onPictureTaken()");
+
+            FileOutputStream fos = null;
+            try {
+                String fileName = String.format(Environment.getExternalStorageDirectory().getAbsolutePath() + "/%d.jpg", System.currentTimeMillis());
+                fos = new FileOutputStream(fileName);
+                fos.write(data);
+                fos.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+            }
+
+        }
+    };
+
 }
