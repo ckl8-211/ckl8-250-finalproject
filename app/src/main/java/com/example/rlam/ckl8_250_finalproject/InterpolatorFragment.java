@@ -91,7 +91,7 @@ public class InterpolatorFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Inflate the fragment_animation layout
-        View v = inflater.inflate(R.layout.interpolator_fragment, container, false);
+        View v = inflater.inflate(com.example.rlam.ckl8_250_finalproject.R.layout.interpolator_fragment, container, false);
        // Initialize Interpolators programmatically by loading them from their XML definitions
         // provided by the framework.
         mInterpolators = new Interpolator[]{
@@ -107,7 +107,7 @@ public class InterpolatorFragment extends Fragment {
 
         // Set up the 'animate' button, when it is clicked the view is animated with the options
         // selected: the Interpolator, duration and animation path
-        Button button = (Button) v.findViewById(R.id.animateButton);
+        Button button = (Button) v.findViewById(com.example.rlam.ckl8_250_finalproject.R.id.animateButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,19 +126,19 @@ public class InterpolatorFragment extends Fragment {
         });
 
         // Get the label to display the selected duration
-        mDurationLabel = (TextView) v.findViewById(R.id.durationLabel);
+        mDurationLabel = (TextView) v.findViewById(com.example.rlam.ckl8_250_finalproject.R.id.durationLabel);
 
 
         // Load names of interpolators from a resource
 
         // Set up SeekBar that defines the duration of the animation
-        mDurationSeekbar = (SeekBar) v.findViewById(R.id.durationSeek);
+        mDurationSeekbar = (SeekBar) v.findViewById(com.example.rlam.ckl8_250_finalproject.R.id.durationSeek);
 
         // Register listener to update the text label when the SeekBar value is updated
         mDurationSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                mDurationLabel.setText(getResources().getString(R.string.animation_duration, i));
+                mDurationLabel.setText(getResources().getString(com.example.rlam.ckl8_250_finalproject.R.string.animation_duration, i));
             }
 
             @Override
@@ -154,7 +154,7 @@ public class InterpolatorFragment extends Fragment {
         mDurationSeekbar.setProgress(INITIAL_DURATION_MS);
 
         // Get the view that will be animated
-        mView = v.findViewById(R.id.square);
+        mView = v.findViewById(com.example.rlam.ckl8_250_finalproject.R.id.purple_square);
 
         // The following Path definitions are used by the ObjectAnimator to scale the view.
 

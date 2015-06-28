@@ -14,7 +14,7 @@ public class TaskDetailActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(com.example.rlam.ckl8_250_finalproject.R.layout.activity_detail);
 
         Bundle args = new Bundle();
 
@@ -27,7 +27,7 @@ public class TaskDetailActivity extends ActionBarActivity {
             FragmentTransaction ft = fm.beginTransaction();
             args.putParcelable("uri", uri);
             fragment.setArguments(args);
-            ft.add(R.id.task_detail_container, fragment);
+            ft.add(com.example.rlam.ckl8_250_finalproject.R.id.task_detail_container, fragment);
             ft.commit();
         }
     }
@@ -36,7 +36,7 @@ public class TaskDetailActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_detail, menu);
+        getMenuInflater().inflate(com.example.rlam.ckl8_250_finalproject.R.menu.menu_detail, menu);
         return true;
     }
 
@@ -48,7 +48,7 @@ public class TaskDetailActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == com.example.rlam.ckl8_250_finalproject.R.id.action_settings) {
             return true;
         }
 

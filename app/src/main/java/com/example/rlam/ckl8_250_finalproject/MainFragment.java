@@ -20,9 +20,7 @@ import android.widget.Toast;
 
 /**
  *
- * Created by Margaret on 4/22/2015
- *
- * A fragment that shows a list of Android versions.
+ * A fragment that shows a list of taichi movements.
  * Use CursorLoader to load data
  *
  */
@@ -83,7 +81,7 @@ public class MainFragment extends ListFragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(com.example.rlam.ckl8_250_finalproject.R.layout.fragment_main, container, false);
         String[] fromFields = new String[] {TaskListContract.TaskList.TASK_NAME};
         int[] toFields = new int[] {android.R.id.text1};
 
@@ -145,19 +143,19 @@ public class MainFragment extends ListFragment implements
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_mainfragment, menu);
+        inflater.inflate(com.example.rlam.ckl8_250_finalproject.R.menu.menu_mainfragment, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_add:
+            case com.example.rlam.ckl8_250_finalproject.R.id.action_add:
                 //TODO: add data
                 Intent intent = new Intent(getActivity(), AddTaskActivity.class);
                 startActivity(intent);
 //                Toast.makeText(getActivity(), "To be implemented", Toast.LENGTH_LONG).show();
                 break;
-            case R.id.action_delete:
+            case com.example.rlam.ckl8_250_finalproject.R.id.action_delete:
                 //TODO: delete data
                 Toast.makeText(getActivity(), "To be implemented", Toast.LENGTH_LONG).show();
                 break;

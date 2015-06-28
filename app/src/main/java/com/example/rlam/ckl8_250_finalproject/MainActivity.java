@@ -12,7 +12,6 @@ import android.speech.*;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
 
@@ -40,23 +39,25 @@ public class MainActivity extends FragmentActivity {
     private Handler mHandler = new android.os.Handler();
     private CameraPreview mCameraPreview;
     private boolean mMyTaichiShown;
+//    private static final String TAG = MainActivity.class.getSimpleName();
     private static final String TAG = "MyTaichiListner";
     private SpeechRecognizer mSpeechCommand;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        mCameraPreview = new CameraPreview(this);
-        FrameLayout fl = (FrameLayout) findViewById(R.id.my_taichi_content_fragment);
-        fl.addView(mCameraPreview);
-        fl.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mCameraPreview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-            }
-        });
-
+        setContentView(com.example.rlam.ckl8_250_finalproject.R.layout.activity_main);
+//        mCameraPreview = new CameraPreview(this);
+//        FrameLayout fl = (FrameLayout) findViewById(R.id.my_taichi_content_fragment);
+//        fl.addView(mCameraPreview);
+//        fl.setOnClickListener(new View.OnClickListener() {
+//            public void onClick(View v) {
+//                mCameraPreview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+//            }
+//        });
         // We are just getting a single default camera
-        mCameraPreview.camera = Camera.open();
+//        mCameraPreview.camera = Camera.open();
+
+        // setup voice input to get ready to take a snapshot
         mSpeechCommand = SpeechRecognizer.createSpeechRecognizer(this);
         mSpeechCommand.setRecognitionListener(new listener());
         if (savedInstanceState == null) {
@@ -66,7 +67,7 @@ public class MainActivity extends FragmentActivity {
             mSpeechCommand.startListening(intent);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             InterpolatorFragment fragment = new InterpolatorFragment();
-            transaction.replace(R.id.my_taichi_content_fragment, fragment);
+            transaction.replace(com.example.rlam.ckl8_250_finalproject.R.id.my_taichi_content_fragment, fragment);
             transaction.commit();
 
 //            getSupportFragmentManager().beginTransaction()
@@ -78,15 +79,15 @@ public class MainActivity extends FragmentActivity {
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(com.example.rlam.ckl8_250_finalproject.R.menu.main, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem myTaichi = menu.findItem(R.id.menu_mytaichi);
-        myTaichi.setVisible(findViewById(R.id.sample_output) instanceof ViewAnimator);
-        myTaichi.setTitle(mMyTaichiShown ? R.string.hide_mytaichi : R.string.show_mytaichi);
+        MenuItem myTaichi = menu.findItem(com.example.rlam.ckl8_250_finalproject.R.id.menu_mytaichi);
+        myTaichi.setVisible(findViewById(com.example.rlam.ckl8_250_finalproject.R.id.sample_output) instanceof ViewAnimator);
+        myTaichi.setTitle(mMyTaichiShown ? com.example.rlam.ckl8_250_finalproject.R.string.hide_mytaichi : com.example.rlam.ckl8_250_finalproject.R.string.show_mytaichi);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -95,13 +96,13 @@ public class MainActivity extends FragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.container, new MainFragment())
+                .add(com.example.rlam.ckl8_250_finalproject.R.id.container, new MainFragment())
                 .commit();
 
         switch(item.getItemId()) {
-            case R.id.menu_mytaichi:
+            case com.example.rlam.ckl8_250_finalproject.R.id.menu_mytaichi:
                 mMyTaichiShown = !mMyTaichiShown;
-                ViewAnimator output = (ViewAnimator) findViewById(R.id.sample_output);
+                ViewAnimator output = (ViewAnimator) findViewById(com.example.rlam.ckl8_250_finalproject.R.id.sample_output);
                 if (mMyTaichiShown) {
                     output.setDisplayedChild(1);
                 } else {
@@ -119,8 +120,11 @@ public class MainActivity extends FragmentActivity {
         {
             Log.d(TAG, "onReadyForSpeech");
         }
-        public void onBeginningOfSpeech()
-        {
+        public void onBeginningOfSpeech(){
+        FrameLayout fl = (FrameLayout) findViewById(com.example.rlam.ckl8_250_finalproject.R.id.my_taichi_content_fragment);
+        fl.addView(mCameraPreview);
+            mCameraPreview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+            mCameraPreview.camera = Camera.open();
             Log.d(TAG, "onBeginningOfSpeech");
         }
         public void onRmsChanged(float rmsdB)
@@ -180,7 +184,7 @@ public class MainActivity extends FragmentActivity {
 
                 @Override
                 public void run() {
-                    MediaPlayer mp = MediaPlayer.create(MainActivity.this, R.raw.shutter);
+                    MediaPlayer mp = MediaPlayer.create(MainActivity.this, com.example.rlam.ckl8_250_finalproject.R.raw.shutter);
                     mp.start();
                 }
             };
