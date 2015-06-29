@@ -17,17 +17,33 @@
 package com.example.rlam.ckl8_250_finalproject;
 
 import android.animation.ObjectAnimator;
+import android.content.Intent;
 import android.graphics.Path;
+import android.hardware.Camera;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 /**
@@ -38,6 +54,8 @@ import android.widget.TextView;
  */
 public class InterpolatorFragment extends Fragment {
 
+    private Handler mHandler = new android.os.Handler();
+    private static final String TAG = "MyTaichiListner";
     /**
      * View that is animated.
      */
@@ -81,6 +99,10 @@ public class InterpolatorFragment extends Fragment {
      * String used for logging.
      */
 
+
+    private SpeechRecognizer mSpeechCommand;
+    private CameraPreview mCameraPreview;
+
     public InterpolatorFragment() {
         // Required empty public constructor
     }
@@ -104,24 +126,29 @@ public class InterpolatorFragment extends Fragment {
                 new AnimationUtils().loadInterpolator(getActivity(),
                         android.R.interpolator.linear_out_slow_in)
         };
+        mSpeechCommand = SpeechRecognizer.createSpeechRecognizer(getActivity());
 
+        // camera preview view surface
+        mCameraPreview = new CameraPreview(getActivity());
+        FrameLayout fl = (FrameLayout) v.findViewById(R.id.taichi_preview);
+        fl.addView(mCameraPreview);
+        mCameraPreview.camera = Camera.open();
+        // setup voice input to get ready to take a snapshot
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getActivity().getApplication().getPackageName());
+        mSpeechCommand.startListening(intent);
+        mSpeechCommand.setRecognitionListener(new listener());
         // Set up the 'animate' button, when it is clicked the view is animated with the options
         // selected: the Interpolator, duration and animation path
         Button button = (Button) v.findViewById(com.example.rlam.ckl8_250_finalproject.R.id.animateButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                // Duration selected in SeekBar
-                long duration = mDurationSeekbar.getProgress();
-                // Animation path is based on whether animating in or out
-//                Path path = mIsOut ? mPathIn : mPathOut;
-
-                // Start the animation with the selected options
-                startAnimation(mInterpolators[1], duration, mPathIn);
-
-                // Toggle direction of animation (path)
-//                mIsOut = !mIsOut;
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                TaiChiMoveFragment fragment = new TaiChiMoveFragment();
+                transaction.replace(R.id.taichi_interpolator_fragment, fragment);
+                transaction.commit();
             }
         });
 
@@ -220,6 +247,127 @@ public class InterpolatorFragment extends Fragment {
      * @return
      */
     public Path getPathOut() {
+
         return mPathOut;
     }
+    class listener implements RecognitionListener
+    {
+        public void onReadyForSpeech(Bundle params)
+        {
+            Log.d(TAG, "onReadyForSpeech");
+        }
+        public void onBeginningOfSpeech(){
+            Log.d(TAG, "onBeginningOfSpeech");
+        }
+        public void onRmsChanged(float rmsdB)
+        {
+            Log.d(TAG, "onRmsChanged");
+        }
+        public void onBufferReceived(byte[] buffer)
+        {
+            Log.d(TAG, "onBufferReceived");
+        }
+        public void onEndOfSpeech()
+        {
+//            mCameraPreview.camera.takePicture(shutterCallback, rawCallback, postviewCallback, jpegCallback);
+            // start taking picture when speech ends
+            // Duration selected in SeekBar
+            long duration = mDurationSeekbar.getProgress();
+            // Animation path is based on whether animating in or out
+//                Path path = mIsOut ? mPathIn : mPathOut;
+
+            // Start the animation with the selected options
+            startAnimation(mInterpolators[1], duration, mPathIn);
+//            mCameraPreview.camera.takePicture(shutterCallback, rawCallback, postviewCallback, jpegCallback);
+            Log.d(TAG, "onEndofSpeech");
+        }
+        public void onError(int error)
+        {
+            Log.d(TAG, "error " + error);
+        }
+        public void onResults(Bundle results)
+        {
+            Log.d(TAG, "onResults " + results);
+            ArrayList mVoiceInput = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+            for (int i = 0; i < mVoiceInput.size(); i++)
+            {
+                Log.d(TAG, "result " + mVoiceInput.get(i));
+            }
+        }
+        public void onPartialResults(Bundle partialResults)
+        {
+            Log.d(TAG, "onPartialResults");
+        }
+        public void onEvent(int eventType, Bundle params)
+        {
+            Log.d(TAG, "onEvent " + eventType);
+        }
+    }
+    /**
+     * Release the resources when paused.
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mCameraPreview.camera != null) {
+            mCameraPreview.camera.release();
+            mCameraPreview.camera = null;
+        }
+    }
+
+    public Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+
+        public void onShutter() {
+            Log.d(TAG, "shutterCallback:onShutter()");
+
+            // Play a sound
+            Runnable r = new Runnable() {
+
+                @Override
+                public void run() {
+                    MediaPlayer mp = MediaPlayer.create(getActivity(), R.raw.shutter) ;
+                    mp.start();
+                }
+            };
+
+            mHandler.postDelayed(r, 1000);
+        }
+    };
+
+    Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Log.d(TAG, "rawCallback:onPictureTaken()");
+        }
+    };
+    // PictureCallback to handle postview
+    Camera.PictureCallback postviewCallback = new Camera.PictureCallback() {
+
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Log.d(TAG, "postviewCallback:onPictureTaken()");
+
+        }
+    };
+
+    // PictureCallback to handle saving the picture to storage
+    Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
+
+        public void onPictureTaken(byte[] data, Camera camera) {
+            Log.d(TAG, "jpegCallback:onPictureTaken()");
+
+            FileOutputStream fos = null;
+            try {
+                String fileName = String.format(Environment.getExternalStorageDirectory().getAbsolutePath() + "/%d.jpg", System.currentTimeMillis());
+                fos = new FileOutputStream(fileName);
+                fos.write(data);
+                fos.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+            }
+
+        }
+    };
 }

@@ -48,8 +48,8 @@ public class TaskListDbHelper extends SQLiteOpenHelper {
 
         // Create initial data
         ContentValues contentValues = new ContentValues();
-        contentValues.put(TASK_LIST_ROW_TASK_NAME, "First Task Name");
-        contentValues.put(TASK_LIST_ROW_TASK_DESCRIPTION, "First Task Description");
+        contentValues.put(TASK_LIST_ROW_TASK_NAME, "Ba He Liang Zhi");
+        contentValues.put(TASK_LIST_ROW_TASK_DESCRIPTION, "The left hand is too much to the side");
 
         db.insert(TASK_LIST_TABLE_NAME, // table name
                 null,

@@ -20,9 +20,12 @@
         <![CDATA[
         
             
-            This sample demonstrates the use of animation interpolators and path animations for
-            Material Design. It shows how an ObjectAnimator is used to animate two properties of a
-            view (scale X and Y) along a path.
+            This application will take a picture of your TaiChi pose using voice input. To
+            begin, please set the wait time before the picture will be taken. Then
+            perform your TaiChi move while calling out the name of the move you are doing.
+            You move should be completed at the same time when you finish calling out the name.
+            A picture will then be taken and saved for later analysis.
+            Note: You must mount and locate your camera to take a full body pose.
             
         
         ]]>
