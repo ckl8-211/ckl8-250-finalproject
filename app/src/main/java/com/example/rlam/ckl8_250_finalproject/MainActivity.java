@@ -12,6 +12,7 @@ import android.speech.*;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ViewAnimator;
 
@@ -29,9 +30,9 @@ import java.util.ArrayList;
  * - On handsets, the activity presents a list, which when touched,
  * leads to a details screen {@link TaskDetailActivity}
  * - On tablets, the activity presents the list and item details side-by-side
- * using two vertical panes: {@link MainFragment} and {@link TaskDetailFragment}
+ * using two vertical panes: {@link TaiChiMoveFragment} and {@link TaskDetailFragment}
  * <p/>
- * This activity also implements the required {@link MainFragment.Callbacks} interface
+ * This activity also implements the required {@link TaiChiMoveFragment.Callbacks} interface
  * to listen for item selections.
  */
 public class MainActivity extends FragmentActivity {
@@ -46,16 +47,8 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(com.example.rlam.ckl8_250_finalproject.R.layout.activity_main);
-//        mCameraPreview = new CameraPreview(this);
-//        FrameLayout fl = (FrameLayout) findViewById(R.id.my_taichi_content_fragment);
-//        fl.addView(mCameraPreview);
-//        fl.setOnClickListener(new View.OnClickListener() {
-//            public void onClick(View v) {
-//                mCameraPreview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-//            }
-//        });
-        // We are just getting a single default camera
-//        mCameraPreview.camera = Camera.open();
+
+        mCameraPreview = new CameraPreview(this);
 
         // setup voice input to get ready to take a snapshot
         mSpeechCommand = SpeechRecognizer.createSpeechRecognizer(this);
@@ -65,13 +58,18 @@ public class MainActivity extends FragmentActivity {
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
             intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getApplication().getPackageName());
             mSpeechCommand.startListening(intent);
+            FrameLayout fl = (FrameLayout) findViewById(R.id.taichi_camera_fragment);
+            fl.addView(mCameraPreview);
+            mCameraPreview.camera = Camera.open();
+            // set up animation interpolation
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             InterpolatorFragment fragment = new InterpolatorFragment();
-            transaction.replace(com.example.rlam.ckl8_250_finalproject.R.id.my_taichi_content_fragment, fragment);
+            transaction.replace(R.id.taichi_camera_fragment, fragment);
             transaction.commit();
 
+            // fragment manager for showing the list of taichi moves in db
 //            getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.container, new MainFragment())
+//                    .add(R.id.container, new TaiChiMoveFragment())
 //                    .commit();
         }
 
@@ -96,7 +94,7 @@ public class MainActivity extends FragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         getSupportFragmentManager().beginTransaction()
-                .add(com.example.rlam.ckl8_250_finalproject.R.id.container, new MainFragment())
+                .add(com.example.rlam.ckl8_250_finalproject.R.id.container, new TaiChiMoveFragment())
                 .commit();
 
         switch(item.getItemId()) {
@@ -121,10 +119,8 @@ public class MainActivity extends FragmentActivity {
             Log.d(TAG, "onReadyForSpeech");
         }
         public void onBeginningOfSpeech(){
-        FrameLayout fl = (FrameLayout) findViewById(com.example.rlam.ckl8_250_finalproject.R.id.my_taichi_content_fragment);
-        fl.addView(mCameraPreview);
+
             mCameraPreview.camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-            mCameraPreview.camera = Camera.open();
             Log.d(TAG, "onBeginningOfSpeech");
         }
         public void onRmsChanged(float rmsdB)

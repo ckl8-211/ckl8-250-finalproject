@@ -25,7 +25,7 @@ import android.widget.Toast;
  *
  */
 
-public class MainFragment extends ListFragment implements
+public class TaiChiMoveFragment extends ListFragment implements
         LoaderManager.LoaderCallbacks<Cursor>
 {
     /**
@@ -69,7 +69,7 @@ public class MainFragment extends ListFragment implements
 
     private SimpleCursorAdapter mAdapter;
 
-    public MainFragment() {
+    public TaiChiMoveFragment() {
     }
 
     @Override
